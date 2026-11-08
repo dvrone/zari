@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botnet Architecture Visualizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><circle cx="12" cy="11" r="2.2"/><path d="M12 13.2V17M8.5 9l-2-1M15.5 9l2-1"/></svg>
+    </div>
+    <div>
+      <div class="brand-title">Botnet Visualizer</div>
+      <div class="brand-sub">Ta’limiy simulyatsiya</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-item active" data-section="home">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Bosh sahifa</span>
+    </button>
+    <button class="nav-item" data-section="arch">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.3 11l9.4-5M7.3 13l9.4 5"/></svg>
+      <span>Botnet arxitekturasi</span>
+    </button>
+    <button class="nav-item" data-section="sim">
+      <svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+      <span>Simulyatsiya</span>
+    </button>
+    <button class="nav-item" data-section="log">
+      <svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>
+      <span>Hodisalar jurnali</span>
+      <em class="badge" id="log-badge">0</em>
+    </button>
+    <button class="nav-item" data-section="about">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+      <span>Botnet haqida</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-foot">
+    <div class="safe-note">
+      <span class="dot green"></span>
+      Barcha jarayonlar faqat brauzer ichida, virtual tarzda bajariladi.
+    </div>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menu-btn" aria-label="Menyu">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <h1 id="page-title">Bosh sahifa</h1>
+    <div class="sim-badge" id="sim-badge"><span class="dot red"></span><span id="sim-badge-text">To‘xtatilgan</span></div>
+  </header>
+
+  <main class="content">
+
+    <!-- BOSH SAHIFA -->
+    <section class="view active" id="view-home">
+      <div class="stats-grid">
+        <div class="stat-card c-blue">
+          <div class="stat-label">Jami qurilmalar</div>
+          <div class="stat-value" id="stat-total">9</div>
+          <div class="stat-hint">Botmaster, C2, router va 6 ta bot</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-label">Faol botlar</div>
+          <div class="stat-value" id="stat-bots">0</div>
+          <div class="stat-hint" id="stat-bots-hint">6 tadan 0 tasi</div>
+        </div>
+        <div class="stat-card c-cyan">
+          <div class="stat-label">Ulangan qurilmalar</div>
+          <div class="stat-value" id="stat-connected">0</div>
+          <div class="stat-hint">Tarmoqqa ulangan tugunlar</div>
+        </div>
+        <div class="stat-card c-orange">
+          <div class="stat-label">Yuborilgan virtual buyruqlar</div>
+          <div class="stat-value" id="stat-commands">0</div>
+          <div class="stat-hint">Faqat simulyatsiya</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h2>Loyiha haqida</h2>
+          <p>Bu ilova botnet tarmog‘i qanday tuzilganini vizual ko‘rsatadi: <b>Botmaster → C2 Server → Router → Virtual botlar</b>. Barcha jarayonlar virtual bo‘lib, hech qanday haqiqiy qurilma yoki tizimga ta’sir qilmaydi.</p>
+          <div class="btn-row">
+            <button class="btn primary" data-goto="sim">▶ Simulyatsiyaga o‘tish</button>
+            <button class="btn" data-goto="arch">Arxitekturani ko‘rish</button>
+            <button class="btn" data-goto="about">Nazariya</button>
+          </div>
+          <div class="legend">
+            <span><i class="dot green"></i> Faol</span>
+            <span><i class="dot orange"></i> Kutilmoqda</span>
+            <span><i class="dot red"></i> Ulanmagan</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Botlar holati</h2>
+          <ul class="bot-list" id="bot-list"></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>So‘nggi hodisalar</h2>
+          <button class="link-btn" data-goto="log">Barchasini ko‘rish →</button>
+        </div>
+        <ul class="log-list compact" id="log-preview"></ul>
+      </div>
+    </section>
+
+    <!-- ARXITEKTURA -->
+    <section class="view" id="view-arch">
+      <div class="card">
+        <div class="card-head">
+          <h2>Botnet arxitekturasi</h2>
+          <div class="legend">
+            <span><i class="dot green"></i> Faol</span>
+            <span><i class="dot orange"></i> Kutilmoqda</span>
+            <span><i class="dot red"></i> Ulanmagan</span>
+          </div>
+        </div>
+        <p class="muted">Tafsilot olish uchun diagrammadagi istalgan tugunni bosing. Aloqa chiziqlarini ko‘rish uchun “Simulyatsiya” bo‘limida jarayonni ishga tushiring.</p>
+        <div class="diagram-wrap" id="diagram-arch"></div>
+        <div class="node-info" id="info-arch"></div>
+      </div>
+    </section>
+
+    <!-- SIMULYATSIYA -->
+    <section class="view" id="view-sim">
+      <div class="two-col wide-left">
+        <div class="card">
+          <h2>Simulyatsiya boshqaruvi</h2>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-start">▶ Simulyatsiyani boshlash</button>
+            <button class="btn" id="btn-pause" disabled>❚❚ Pauza</button>
+            <button class="btn" id="btn-resume" disabled>⏵ Davom ettirish</button>
+            <button class="btn danger" id="btn-reset">↺ Qayta boshlash</button>
+          </div>
+          <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+          <div class="muted small" id="progress-text">Simulyatsiya hali boshlanmagan.</div>
+        </div>
+
+        <div class="card">
+          <h2>Virtual buyruq yuborish</h2>
+          <label class="field-label" for="cmd-select">Ta’limiy buyruq</label>
+          <select id="cmd-select" class="select">
+            <option value="status">Holatni tekshirish</option>
+            <option value="link">Ulanish holatini tekshirish</option>
+            <option value="message">Test xabarini yuborish</option>
+          </select>
+          <button class="btn accent block" id="btn-send">➤ Buyruq yuborish</button>
+          <div class="muted small">Buyruqlar zararsiz va faqat shu sahifada simulyatsiya qilinadi.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Jonli diagramma</h2>
+          <div class="legend">
+            <span><i class="dot green"></i> Faol</span>
+            <span><i class="dot orange"></i> Kutilmoqda</span>
+            <span><i class="dot red"></i> Ulanmagan</span>
+          </div>
+        </div>
+        <div class="diagram-wrap" id="diagram-sim"></div>
+        <div class="node-info" id="info-sim"></div>
+      </div>
+
+      <div class="card">
+        <h2>Botlarning simulyatsiya javoblari</h2>
+        <ul class="resp-list" id="responses">
+          <li class="muted">Hozircha javoblar yo‘q. Simulyatsiyani boshlab, buyruq yuboring.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- HODISALAR JURNALI -->
+    <section class="view" id="view-log">
+      <div class="card">
+        <div class="card-head">
+          <h2>Hodisalar jurnali</h2>
+          <button class="btn small" id="btn-clear-log">Jurnalni tozalash</button>
+        </div>
+        <ul class="log-list" id="log-full"></ul>
+      </div>
+    </section>
+
+    <!-- BOTNET HAQIDA -->
+    <section class="view" id="view-about">
+      <div class="card hero">
+        <h2>Botnet haqida</h2>
+        <p>Quyida botnet tushunchasi oddiy tilda tushuntirilgan. Ma’lumotlar universitet taqdimoti uchun mo‘ljallangan.</p>
+      </div>
+
+      <div class="edu-grid">
+        <article class="card edu">
+          <div class="edu-num">1</div>
+          <h3>Botnet nima?</h3>
+          <p>Botnet — zararli dastur bilan yuqtirilgan va bir joydan masofadan boshqariladigan qurilmalar (kompyuter, router, kamera va h.k.) tarmog‘i. “Botnet” so‘zi inglizcha <i>robot</i> va <i>network</i> so‘zlaridan olingan.</p>
+        </article>
+        <article class="card edu">
+          <div class="edu-num">2</div>
+          <h3>Botmaster kim?</h3>
+          <p>Botmaster — botnetni boshqaradigan shaxs yoki guruh. U buyruqlarni bevosita botlarga emas, odatda boshqaruv serveri orqali yuboradi, shu sababli uni aniqlash qiyinlashadi.</p>
+        </article>
+        <article class="card edu">
+          <div class="edu-num">3</div>
+          <h3>C2 Server nima?</h3>
+          <p>C2 (Command and Control) — boshqaruv va nazorat serveri. U botlar bilan aloqa o‘rnatadi, ulardan holat haqida ma’lumot oladi va botmasterning ko‘rsatmalarini ularga yetkazadi.</p>
+        </article>
+        <article class="card edu">
+          <div class="edu-num">4</div>
+          <h3>Botlar nima?</h3>
+          <p>Bot — botnet tarkibidagi yuqtirilgan qurilma. Egasi ko‘pincha buni bilmaydi: qurilma odatdagidek ishlayveradi, lekin fonda C2 serverdan ko‘rsatma kutadi.</p>
+        </article>
+        <article class="card edu wide">
+          <div class="edu-num">5</div>
+          <h3>Botnet qanday ishlaydi?</h3>
+          <ol class="steps">
+            <li><b>Yuqtirish:</b> zararli dastur fishing xatlari, zaif dasturlar yoki oddiy parollar orqali qurilmaga tushadi.</li>
+            <li><b>Ulanish:</b> yuqtirilgan qurilma C2 serverga bog‘lanib, tarmoqqa qo‘shiladi.</li>
+            <li><b>Kutish:</b> bot vaqti-vaqti bilan C2 serverdan yangi ko‘rsatma bor-yo‘qligini so‘raydi.</li>
+            <li><b>Buyruq:</b> botmaster buyruqni C2 serverga beradi, server uni botlarga tarqatadi.</li>
+            <li><b>Javob:</b> botlar bajarilgan ish haqida C2 serverga hisobot qaytaradi.</li>
+          </ol>
+        </article>
+        <article class="card edu wide protect">
+          <div class="edu-num">6</div>
+          <h3>Botnetdan qanday himoyalanish mumkin?</h3>
+          <ul class="checks">
+            <li>Operatsion tizim va dasturlarni muntazam yangilab turing.</li>
+            <li>Qurilmalarda standart parollarni o‘zgartiring, kuchli va noyob parollardan foydalaning.</li>
+            <li>Ishonchli antivirus va xavfsizlik devori (firewall) ishlating.</li>
+            <li>Shubhali xat, havola va ilovalarni ochmang; ikki bosqichli autentifikatsiyani yoqing.</li>
+            <li>Tarmoq trafigini kuzating: notanish manzillarga g‘ayrioddiy ulanishlar xavf belgisi bo‘lishi mumkin.</li>
+            <li>Keraksiz xizmatlar va ochiq portlarni o‘chirib qo‘ying, tarmoqni segmentlarga bo‘ling.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-project">Botnet Architecture Visualizer</div>
+      <div class="footer-author">
+        <span><b>Muallif:</b> Zarnigor Shamuratova</span>
+        <span class="sep">•</span>
+        <span><b>Guruh:</b> KX 109-23 UZB</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
