@@ -32,6 +32,11 @@
       <svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
       <span>Simulyatsiya</span>
     </button>
+    <button class="nav-item" data-section="term">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 10l3 2.5L7 15M12.5 15H17"/></svg>
+      <span>Terminal</span>
+      <em class="badge hot" id="atk-nav-badge" hidden>HUJUM</em>
+    </button>
     <button class="nav-item" data-section="log">
       <svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>
       <span>Hodisalar jurnali</span>
@@ -46,7 +51,7 @@
   <div class="sidebar-foot">
     <div class="safe-note">
       <span class="dot green"></span>
-      Barcha jarayonlar faqat brauzer ichida, virtual tarzda bajariladi.
+      Barcha jarayonlar faqat brauzer ichida, virtual tarzda bajariladi. Tarmoqqa hech narsa yuborilmaydi.
     </div>
   </div>
 </aside>
@@ -59,7 +64,10 @@
       <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <h1 id="page-title">Bosh sahifa</h1>
-    <div class="sim-badge" id="sim-badge"><span class="dot red"></span><span id="sim-badge-text">To‘xtatilgan</span></div>
+    <button class="icon-toggle" id="icon-bg-toggle" title="Ikonkalar foni: yorug‘ / qorong‘i" aria-label="Ikonkalar fonini almashtirish">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>
+    </button>
+    <div class="sim-badge" id="sim-badge"><span class="dot red"></span><span>To‘xtatilgan</span></div>
   </header>
 
   <main class="content">
@@ -69,8 +77,8 @@
       <div class="stats-grid">
         <div class="stat-card c-blue">
           <div class="stat-label">Jami qurilmalar</div>
-          <div class="stat-value" id="stat-total">9</div>
-          <div class="stat-hint">Botmaster, C2, router va 6 ta bot</div>
+          <div class="stat-value" id="stat-total">11</div>
+          <div class="stat-hint">Botnet (9) va virtual nishon (2)</div>
         </div>
         <div class="stat-card c-green">
           <div class="stat-label">Faol botlar</div>
@@ -80,7 +88,7 @@
         <div class="stat-card c-cyan">
           <div class="stat-label">Ulangan qurilmalar</div>
           <div class="stat-value" id="stat-connected">0</div>
-          <div class="stat-hint">Tarmoqqa ulangan tugunlar</div>
+          <div class="stat-hint">Tarmoqqa ulangan botnet tugunlari</div>
         </div>
         <div class="stat-card c-orange">
           <div class="stat-label">Yuborilgan virtual buyruqlar</div>
@@ -92,16 +100,17 @@
       <div class="two-col">
         <div class="card">
           <h2>Loyiha haqida</h2>
-          <p>Bu ilova botnet tarmog‘i qanday tuzilganini vizual ko‘rsatadi: <b>Botmaster → C2 Server → Router → Virtual botlar</b>. Barcha jarayonlar virtual bo‘lib, hech qanday haqiqiy qurilma yoki tizimga ta’sir qilmaydi.</p>
+          <p>Bu ilova botnet tarmog‘i qanday tuzilganini vizual ko‘rsatadi: <b>Botmaster → C2 Server → Router → Virtual botlar → Nishon</b>. Terminalga inglizcha buyruq yozib, virtual hujumni sinab ko‘rishingiz va firewall bilan himoyalanishni kuzatishingiz mumkin. Hammasi virtual: haqiqiy qurilma yoki tarmoqqa ta’sir qilmaydi.</p>
           <div class="btn-row">
             <button class="btn primary" data-goto="sim">▶ Simulyatsiyaga o‘tish</button>
-            <button class="btn" data-goto="arch">Arxitekturani ko‘rish</button>
+            <button class="btn" data-goto="term">Terminalni ochish</button>
+            <button class="btn" data-goto="arch">Arxitektura</button>
             <button class="btn" data-goto="about">Nazariya</button>
           </div>
           <div class="legend">
             <span><i class="dot green"></i> Faol</span>
-            <span><i class="dot orange"></i> Kutilmoqda</span>
-            <span><i class="dot red"></i> Ulanmagan</span>
+            <span><i class="dot orange"></i> Kutilmoqda / hujum ostida</span>
+            <span><i class="dot red"></i> Ulanmagan / ishdan chiqqan</span>
           </div>
         </div>
 
@@ -109,6 +118,11 @@
           <h2>Botlar holati</h2>
           <ul class="bot-list" id="bot-list"></ul>
         </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Nishon server holati</h2></div>
+        <div class="hud-slot"></div>
       </div>
 
       <div class="card">
@@ -139,7 +153,7 @@
 
     <!-- SIMULYATSIYA -->
     <section class="view" id="view-sim">
-      <div class="two-col wide-left">
+      <div class="two-col">
         <div class="card">
           <h2>Simulyatsiya boshqaruvi</h2>
           <div class="btn-row">
@@ -156,12 +170,24 @@
           <h2>Virtual buyruq yuborish</h2>
           <label class="field-label" for="cmd-select">Ta’limiy buyruq</label>
           <select id="cmd-select" class="select">
-            <option value="status">Holatni tekshirish</option>
-            <option value="link">Ulanish holatini tekshirish</option>
-            <option value="message">Test xabarini yuborish</option>
+            <option value="report all">Holatni tekshirish</option>
+            <option value="ping all">Ulanish holatini tekshirish</option>
+            <option value="broadcast hello-bots">Test xabarini yuborish</option>
           </select>
           <button class="btn accent block" id="btn-send">➤ Buyruq yuborish</button>
-          <div class="muted small">Buyruqlar zararsiz va faqat shu sahifada simulyatsiya qilinadi.</div>
+          <div class="muted small">Buyruq terminal orqali ham bajariladi, natijani “Terminal” bo‘limida ko‘rasiz.</div>
+        </div>
+      </div>
+
+      <div class="card attack-card">
+        <div class="card-head">
+          <h2><img class="h-ico" src="img/sign.png" alt="" onerror="this.style.display='none'"> Virtual hujum (DDoS) simulyatsiyasi</h2>
+        </div>
+        <p class="muted">Faol botlar virtual nishon serverga so‘rovlar oqimini yuboradi. Firewall yoqilsa, hujum bloklanadi va server tiklanadi. Bu faqat animatsiya: hech qanday haqiqiy trafik yuborilmaydi.</p>
+        <div class="btn-row">
+          <button class="btn danger-solid" id="btn-attack">☠ Virtual hujumni boshlash</button>
+          <button class="btn" id="btn-attack-stop">■ Hujumni to‘xtatish</button>
+          <button class="btn shield" id="btn-fw">🛡 Firewall: o‘chiq</button>
         </div>
       </div>
 
@@ -175,6 +201,7 @@
           </div>
         </div>
         <div class="diagram-wrap" id="diagram-sim"></div>
+        <div class="hud-slot"></div>
         <div class="node-info" id="info-sim"></div>
       </div>
 
@@ -183,6 +210,42 @@
         <ul class="resp-list" id="responses">
           <li class="muted">Hozircha javoblar yo‘q. Simulyatsiyani boshlab, buyruq yuboring.</li>
         </ul>
+      </div>
+    </section>
+
+    <!-- TERMINAL -->
+    <section class="view" id="view-term">
+      <div class="term-layout">
+        <div class="term-col">
+          <div class="term">
+            <div class="term-bar">
+              <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+              <span class="term-ico"><img src="img/terminal.png" alt="" onerror="this.style.display='none'"></span>
+              <span class="term-title">botmaster@c2-sim: ~ — virtual terminal</span>
+              <button class="term-clear" id="term-clear" title="Ekranni tozalash (clear)">clear</button>
+            </div>
+            <div class="term-body" id="term-body">
+              <div id="term-out"></div>
+              <label class="term-line">
+                <span class="prompt">botmaster@c2-sim:~$</span>
+                <input id="term-input" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Terminal buyruq kiritish">
+              </label>
+            </div>
+            <div class="term-chips" id="term-chips"></div>
+          </div>
+          <p class="muted small term-note">
+            <img class="h-ico" src="img/warning.png" alt="" onerror="this.style.display='none'">
+            <span>Bu virtual terminal: faqat o‘rnatilgan ta’limiy buyruqlar ishlaydi (<b>help</b> yozing). Haqiqiy tizim buyruqlari bajarilmaydi va tarmoqqa hech narsa yuborilmaydi.</span>
+          </p>
+        </div>
+
+        <div class="diag-col">
+          <div class="card tight">
+            <div class="card-head"><h2>Jonli diagramma</h2></div>
+            <div class="diagram-wrap" id="diagram-term"></div>
+            <div class="hud-slot"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -236,8 +299,13 @@
             <li><b>Javob:</b> botlar bajarilgan ish haqida C2 serverga hisobot qaytaradi.</li>
           </ol>
         </article>
-        <article class="card edu wide protect">
+        <article class="card edu wide">
           <div class="edu-num">6</div>
+          <h3>DDoS hujumi nima va nega xavfli?</h3>
+          <p>DDoS (Distributed Denial of Service) — minglab botlar bir vaqtda bitta serverga so‘rov yuborib, uni haddan tashqari band qilishi. Natijada server oddiy foydalanuvchilarga javob bera olmay qoladi. Simulyatsiyadagi “nishon sog‘ligi” shkalasi serverning yuklamaga chidamliligini ko‘rsatadi. Firewall, tezlikni cheklash (rate limiting) va trafikni filtrlash hujumni kamaytiradi.</p>
+        </article>
+        <article class="card edu wide protect">
+          <div class="edu-num">7</div>
           <h3>Botnetdan qanday himoyalanish mumkin?</h3>
           <ul class="checks">
             <li>Operatsion tizim va dasturlarni muntazam yangilab turing.</li>
